@@ -1,0 +1,4 @@
+= Dockerized HumHub Node
+
+This repository contains the files required to run our private HumHub node within a docker container. Motivation to set this up was driven by the PHP 7 dependency of Humhub 1.2
+
