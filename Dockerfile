@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y \
 	    libmcrypt-dev \
 	    libpng12-dev \
 	    zlib1g-dev libicu-dev g++ \
-	    sendmail cron \
+	    ssmtp \
+	    cron \
     && docker-php-ext-install -j$(nproc) iconv mcrypt fileinfo exif pdo pdo_mysql zip \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd
@@ -20,6 +21,9 @@ RUN echo "mysqli.default_socket=/var/lib/mysql/mysql.sock" >> /usr/local/etc/php
 RUN ln -s /var/www/html /var/www/humhub
 
 RUN echo "127.0.0.1 noreply.total-n.eu $(hostname)" >> /etc/hosts
+RUN sed -ri -e 's/^(mailhub=).*/\1smtp-server/' \
+    -e 's/^#(FromLineOverride)/\1/' /etc/ssmtp/ssmtp.conf
+
 
 COPY php.ini /usr/local/etc/php/
 
