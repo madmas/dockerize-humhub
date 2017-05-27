@@ -1,23 +1,12 @@
 version: '3'
 services:
-  db:
-    image: mysql:5.5
-    ports:
-      - "3309:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: humhub_dbuser
-      MYSQL_PASSWORD: secret
-      MYSQL_DATABASE: humhub
-    volumes:
-      - ./mysql/:/docker-entrypoint-initdb.d
-
   humhub:
     build: .
     ports:
-      - "80:80"
+      - "127.0.0.1:8080:80"
     volumes:
       - .:/var/www/html/admin/
-      - ./humhub_web/humhub:/var/www/html    
-    links:
-      - db
+      - /var/www/humhub:/var/www/html  
+      - /var/run/mysqld/mysqld.sock:/var/lib/mysql/mysql.sock 
+    extra_hosts:
+      - "smtp-server:172.18.0.1"
