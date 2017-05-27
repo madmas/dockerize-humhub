@@ -2,6 +2,8 @@
 
 This repository contains the files required to run our private HumHub node within a docker container. Motivation to set this up was driven by the PHP 7 dependency of Humhub 1.2
 
+The files and the MySQL database remain on the host and just the execution environment, Apache with PHP, is handled by the docker container.
+
 == Aspects
 
 Setting this up, some interesting aspects were covered:
