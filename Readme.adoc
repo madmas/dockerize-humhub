@@ -2,3 +2,39 @@
 
 This repository contains the files required to run our private HumHub node within a docker container. Motivation to set this up was driven by the PHP 7 dependency of Humhub 1.2
 
+== Aspects
+
+Setting this up, some interesting aspects were covered:
+
+
+=== MySQL
+
+Accessing the MySQL Server running on the host (and not planning to containerize it as well as non-development databases are not for containers ;-) ) .
+
+To get this to work, https://github.com/madmas/dockerize-humhub/blob/master/docker-compose.yml#L10[we mount the mysql socket file into the container].
+
+=== Mail
+
+As the docker container itself is not a valid mailhost, we need to use the hosts MTA to deliver mail.
+
+https://stackoverflow.com/questions/26215021/configure-sendmail-inside-a-docker-container[This Stackoverflow Discussion had some good hints in it.] In Summary:
+
+* Enable the Docker Network IP range as valid relay client on the MTA.
+* https://github.com/madmas/dockerize-humhub/blob/master/docker-compose.yml#L12[Add the host as a alias to the hosts file.]
+* Use that alias in HumHub to configure the SMTP Server. (no authentication required as we opened the relay)
+
+
+=== Apache Reverse Proxy 
+
+Now, as we want to keep the SSL config on the hosts apache, we will continue to serve humhub from there.
+Thus we need to change the config to proxy requests to the humhub instance running within our docker container.
+The essential config parameters are:
+
+```SSLProxyVerify none
+SSLProxyCheckPeerCN off
+SSLProxyCheckPeerName off
+ProxyPreserveHost On
+ProxyRequests Off
+ProxyPass / http://localhost:8080/
+ProxyPassReverse / http://localhost:8080/
+``
